@@ -1,0 +1,18 @@
+buckets:
+  - name: influxdb
+    type: influxdb
+    addr: 192.168.86.30:8086
+    database: wp1
+    retention_policy: monitor
+    measurement: vibration
+  - name: vibration
+    type: influxdb
+    addr: 192.168.86.30:8086
+    database: wp1
+    retention_policy: autogen
+    measurement: vibration
+    annotation_db: mydb
+storage:
+  path: /var/lib/loudml
+server:
+  listen: 0.0.0.0:8077
