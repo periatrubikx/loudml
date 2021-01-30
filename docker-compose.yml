@@ -2,9 +2,8 @@ version: '3.9'
 services:
   # Define an LoudML+Tensorflow service
   loudml:
-    depends_on:
-      - "influxdb"
-    image: loudml:latest
+    image: loudml/loudml:latest
+    container_name: loudml
     environment:
       influx: http://192.168.86.30:8086
       influx_database: wp1

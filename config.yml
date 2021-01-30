@@ -4,8 +4,8 @@ buckets:
     addr: 192.168.86.30:8086
     database: wp1
     retention_policy: monitor
-    measurement: vibration
-  - name: vibration
+    measurement: loudml
+  - name: loudml
     type: influxdb
     addr: 192.168.86.30:8086
     database: wp1
