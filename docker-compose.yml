@@ -1,14 +1,61 @@
-version: '3.9'
+# This is a Docker Compose file to work with Loud ML and an InfluxDB stack.
+
+version: "3.6"
+
 services:
-  # Define an LoudML+Tensorflow service
   loudml:
-    image: loudml/loudml:latest
+    image: loudml/loudml
     container_name: loudml
-    environment:
-      influx: http://192.168.86.30:8086
-      influx_database: wp1
     volumes:
-      - ./config.yml:/etc/loudml/config.yml
+      - ./etc/loudml:/var/lib/loudml
     ports:
       - "8077:8077"
-      - "8887:8887"
+    depends_on:
+      - influxdb
+
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./etc/influxdb:/var/lib/influxdb
+
+  chronograf:
+    image: loudml/chronograf
+    container_name: chronograf
+    depends_on:
+      - influxdb
+      - loudml
+      - kapacitor
+    ports:
+      - "8888:8888"
+    volumes:
+      - var_chronograf
+    environment:
+      INFLUXDB_URL: http://influxdb:8086
+      LOUDML_URL: http://loudml:8077
+      KAPACITOR_URL: http://kapacitor:9092
+
+  kapacitor:
+    image: kapacitor
+    container_name: kapacitor
+    depends_on:
+      - influxdb
+    volumes:
+      - ./etc/kapacitor:/var/lib/kapacitor
+    environment:
+      KAPACITOR_INFLUXDB_0_URLS_0: http://influxdb:8086
+
+  telegraf:
+    image: telegraf
+    container_name: telegraf
+    volumes:
+      - ./etc/telegraf:/etc/telegraf
+    depends_on:
+      - influxdb
+    environment:
+      INFLUXDB_URL: http://influxdb:8086
+
+volumes:
+  var_chronograf:
