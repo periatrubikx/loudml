@@ -1,6 +1,8 @@
 .idea
-./etc/chronograf/data
-./etc/influxdb/data
-./etc/kapacitor/data
-./etc/loudml/models
-./etc/loudml/templates
+.DS_Store
+etc/.DS_Store
+etc/chronograf/data
+etc/influxdb/data
+etc/kapacitor/data
+etc/loudml/models
+etc/loudml/templates
