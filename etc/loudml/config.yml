@@ -1,0 +1,20 @@
+  buckets:
+    - name: influxdb
+      type: influxdb
+      addr: 192.168.86.40:8086
+      database: _internal
+      retention_policy: monitor
+      measurement: loudml
+    - name: loudml
+      type: influxdb
+      addr: 192.168.86.40:8086
+      database: loudml
+      retention_policy: autogen
+      measurement: loudml
+      annotation_db: annotations
+
+  storage:
+    path: /var/lib/loudml
+
+  server:
+    listen: 0.0.0.0:8077
