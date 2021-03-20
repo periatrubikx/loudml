@@ -5,65 +5,71 @@ version: "3.6"
 services:
 
   influxdb:
-    image: influxdb:1.8.4-alpine
+    image: influxdb:latest
     container_name: influxdb
     ports:
       - "8086:8086"
     volumes:
       # Mount for influxdb data directory
-      - ./etc/influxdb/data:/var/lib/influxdb
+      - ${INFLUXDB_2_DATA_DIR}/influxdb/data:/var/lib/influxdb2
       # Mount for influxdb configuration
-      - ./etc/influxdb/config/:/etc/influxdb/
+      - ${INFLUXDB_2_CONFIG_DIR}/config/:/etc/influxdb2/
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
+      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
   loudml:
     image: loudml/loudml
     container_name: loudml
     volumes:
-      - ./etc/loudml:/var/lib/loudml:rw
+      - ${LOUD_ML_DATA_DIR}/loudml:/var/lib/loudml:rw
       - ./etc/loudml/config.yml:/etc/loudml/config.yml:ro
     ports:
       - "8077:8077"
     depends_on:
       - influxdb
 
-  chronograf:
-    image: loudml/chronograf
-    container_name: chronograf
-    depends_on:
-      - influxdb
-      - loudml
-      - kapacitor
-    ports:
-      - "8888:8888"
-    volumes:
-      # Mount for chronograf database
-      - ./etc/chronograf/data/:/var/lib/chronograf/
-    environment:
-      INFLUXDB_URL: http://influxdb:8086
-      LOUDML_URL: http://loudml:8077
-      KAPACITOR_URL: http://kapacitor:9092
+#  chronograf:
+#    image: loudml/chronograf
+#    container_name: chronograf
+#    depends_on:
+#      - influxdb
+#      - loudml
+#      - kapacitor
+#    ports:
+#      - "8888:8888"
+#    volumes:
+#      # Mount for chronograf database
+#      - ${LOUD_ML_DATA_DIR}/chronograf/data/:/var/lib/chronograf/
+#    environment:
+#      INFLUXDB_URL: http://influxdb:8086
+#      LOUDML_URL: http://loudml:8077
+#      KAPACITOR_URL: http://kapacitor:9092
 
-  kapacitor:
-    image: kapacitor
-    container_name: kapacitor
-    depends_on:
-      - influxdb
-    volumes:
-      # Mount for kapacitor data directory
-      - ./etc/kapacitor/data/:/var/lib/kapacitor
-      # Mount for kapacitor configuration
-      - ./etc/kapacitor/config/:/etc/kapacitor/
-    environment:
-      KAPACITOR_INFLUXDB_0_URLS_0: http://influxdb:8086
-
-  telegraf:
-    image: telegraf
-    container_name: telegraf
-    volumes:
-      # Mount for telegraf configuration
-      - ./etc/telegraf/:/etc/telegraf/
-      # Mount for Docker API access
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - influxdb
-    environment:
-      INFLUXDB_URL: http://influxdb:8086
+#  kapacitor:
+#    image: kapacitor
+#    container_name: kapacitor
+#    depends_on:
+#      - influxdb
+#    volumes:
+#      # Mount for kapacitor data directory
+#      - ${LOUD_ML_DATA_DIR}/kapacitor/data/:/var/lib/kapacitor
+#      # Mount for kapacitor configuration
+#      - ./etc/kapacitor/config/:/etc/kapacitor/
+#    environment:
+#      KAPACITOR_INFLUXDB_0_URLS_0: http://influxdb:8086
+#
+#  telegraf:
+#    image: telegraf
+#    container_name: telegraf
+#    volumes:
+#      # Mount for telegraf configuration
+#      - ./etc/telegraf/:/etc/telegraf/
+#      # Mount for Docker API access
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    depends_on:
+#      - influxdb
+#    environment:
+#      INFLUXDB_URL: http://influxdb:8086
