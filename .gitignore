@@ -6,3 +6,4 @@ etc/influxdb/data
 etc/kapacitor/data
 etc/loudml/models
 etc/loudml/templates
+.DS_Store
